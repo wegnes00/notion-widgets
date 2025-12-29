@@ -58,7 +58,7 @@
     text-transform: uppercase;
   }
 
-  .weekday {
+  .weekday,.month {
     margin-top: 10px;
     font-size: 16px;
     font-weight: 700;
@@ -90,6 +90,7 @@
   <div class="grid">
     <!-- DAY -->
     <div class="block">
+      <div class="month" id="month">---</div>
       <div class="big-number" id="dayNumber">--</div>
       <div class="weekday" id="weekday">---</div>
     </div>
@@ -135,6 +136,8 @@ function updateWidget() {
   document.getElementById("dayNumber").innerText = now.getDate();
   document.getElementById("weekday").innerText =
     now.toLocaleDateString(undefined, { weekday: "long" });
+  document.getElementById("month").innerText =
+    now.toLocaleDateString(undefined, { month: "long" });
 
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
