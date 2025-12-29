@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notion Counter Widget</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Confetti library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: transparent;
+    }
+
+    .widget {
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      background: #ffffff;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      max-width: 260px;
+      margin: auto;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .count {
+      font-size: 48px;
+      font-weight: 700;
+      margin: 10px 0;
+    }
+
+    .goal {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-bottom: 14px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      min-width: 48px;
+      transition: transform 0.1s ease, opacity 0.1s ease;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .amber { background: #f59e0b; }
+    .blue { background: #3b82f6; }
+    .green { background: #10b981; }
+    .pink { background: #ec4899; }
+    .gray { background: #9ca3af; }
+  </style>
+</head>
+<body>
+
+  <div class="widget">
+    <div class="title" id="title"></div>
+    <div class="count" id="count">0</div>
+    <div class="goal" id="goal"></div>
+
+    <div class="controls">
+      <button id="decrementBtn" class="gray">−</button>
+      <button id="incrementBtn">+</button>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const title = params.get("title") || "My Goal";
+    const goal = parseInt(params.get("goal")) || 10;
+    const step = parseInt(params.get("step")) || 1;
+    const color = params.get("color") || "blue";
+    const start = parseInt(params.get("start")) || 0;
+    const min = parseInt(params.get("min")) || 0;
+
+    const storageKey = "notion-counter-" + title;
+
+    let count = parseInt(localStorage.getItem(storageKey));
+    if (isNaN(count)) count = start;
+
+    const titleEl = document.getElementById("title");
+    const countEl = document.getElementById("count");
+    const goalEl = document.getElementById("goal");
+    const incBtn = document.getElementById("incrementBtn");
+    const decBtn = document.getElementById("decrementBtn");
+
+    titleEl.textContent = title;
+    goalEl.textContent = `Goal: ${goal}`;
+    countEl.textContent = count;
+    incBtn.classList.add(color);
+
+    function updateUI() {
+      countEl.textContent = count;
+      decBtn.disabled = count <= min;
+    }
+
+    incBtn.addEventListener("click", () => {
+      count += step;
+      localStorage.setItem(storageKey, count);
+      updateUI();
+
+      // Confetti on increment
+      confetti({
+        particleCount: 60,
+        spread: 70,
+        origin: { y: 0.7 }
+      });
+
+      if (count >= goal) {
+        confetti({
+          particleCount: 200,
+          spread: 120,
+          origin: { y: 0.6 }
+        });
+      }
+    });
+
+    decBtn.addEventListener("click", () => {
+      if (count - step < min) return;
+      count -= step;
+      localStorage.setItem(storageKey, count);
+      updateUI();
+    });
+
+    updateUI();
+  </script>
+
+</body>
+</html>
