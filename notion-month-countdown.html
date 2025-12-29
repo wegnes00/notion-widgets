@@ -3,131 +3,154 @@
 <head>
 <meta charset="UTF-8" />
 <title>Month Countdown Widget</title>
+
 <style>
+  :root {
+    --bg: #ECEAF3;
+    --text: #7B61C9;
+    --progress: #7B61C9;
+    --radius: 18px;
+    --fontScale: 1;
+  }
+
   body {
     margin: 0;
-    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     background: transparent;
-    color: #111;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   .widget {
-    background: #0f172a;
-    color: #e5e7eb;
-    padding: 20px 22px;
-    border-radius: 14px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 18px;
     width: 100%;
     box-sizing: border-box;
+    transform: scale(var(--fontScale));
+    transform-origin: top left;
   }
 
-  .date {
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .block {
+    background: rgba(255,255,255,0.35);
+    border-radius: calc(var(--radius) - 4px);
+    padding: 18px;
+    text-align: center;
+  }
+
+  .big-number {
+    font-size: 96px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .label {
+    margin-top: 6px;
     font-size: 14px;
-    letter-spacing: 0.04em;
-    opacity: 0.8;
-    margin-bottom: 6px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    text-transform: uppercase;
   }
 
-  .clock {
-    font-size: 36px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    margin-bottom: 16px;
+  .weekday {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    text-transform: uppercase;
   }
 
-  .stat {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    margin-bottom: 8px;
-  }
-
-  .stat strong {
-    font-weight: 600;
-  }
-
-  .progress {
-    height: 8px;
-    background: #1e293b;
+  .progress-wrap {
+    margin-top: 16px;
+    height: 10px;
+    background: rgba(0,0,0,0.08);
     border-radius: 999px;
     overflow: hidden;
-    margin-top: 14px;
   }
 
   .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #38bdf8, #22c55e);
     width: 0%;
-    transition: width 0.5s ease;
+    background: var(--progress);
+    transition: width 0.4s ease;
   }
 </style>
 </head>
+
 <body>
 
 <div class="widget">
-  <div class="date" id="date"></div>
-  <div class="clock" id="clock"></div>
+  <div class="grid">
+    <!-- DAY -->
+    <div class="block">
+      <div class="big-number" id="dayNumber">--</div>
+      <div class="weekday" id="weekday">---</div>
+    </div>
 
-  <div class="stat">
-    <span>Workdays left</span>
-    <strong id="workdays"></strong>
-  </div>
-
-  <div class="stat">
-    <span>Days left this month</span>
-    <strong id="daysLeft"></strong>
-  </div>
-
-  <div class="progress">
-    <div class="progress-bar" id="progressBar"></div>
+    <!-- DAYS LEFT -->
+    <div class="block">
+      <div class="big-number" id="daysLeft">--</div>
+      <div class="label">Days Left</div>
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
+/* =========================
+   QUERY STRING PARAMETERS
+========================= */
+const params = new URLSearchParams(window.location.search);
+
+const bg = params.get("bg");
+const text = params.get("text");
+const progress = params.get("progress");
+const radius = params.get("radius");
+const fontScale = params.get("fontScale");
+
+/* =========================
+   APPLY CUSTOMIZATION
+========================= */
+if (bg) document.documentElement.style.setProperty("--bg", bg);
+if (text) document.documentElement.style.setProperty("--text", text);
+if (progress) document.documentElement.style.setProperty("--progress", progress);
+if (radius) document.documentElement.style.setProperty("--radius", `${radius}px`);
+if (fontScale) document.documentElement.style.setProperty("--fontScale", fontScale);
+
+/* =========================
+   DATE LOGIC
+========================= */
 function updateWidget() {
   const now = new Date();
 
-  // Date display
-  document.getElementById("date").innerText =
-    now.toLocaleDateString(undefined, {
-      weekday: "long",
-      month: "long",
-      day: "numeric"
-    });
+  document.getElementById("dayNumber").innerText = now.getDate();
+  document.getElementById("weekday").innerText =
+    now.toLocaleDateString(undefined, { weekday: "long" });
 
-  // Clock
-  document.getElementById("clock").innerText =
-    now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  // End of month
   const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  // Days left
   const msPerDay = 1000 * 60 * 60 * 24;
   const daysLeft = Math.ceil((endOfMonth - now) / msPerDay);
+  const totalDays = Math.ceil((endOfMonth - startOfMonth) / msPerDay);
+
   document.getElementById("daysLeft").innerText = daysLeft;
 
-  // Workdays left
-  let workdays = 0;
-  const temp = new Date(now);
-
-  while (temp <= endOfMonth) {
-    const day = temp.getDay();
-    if (day !== 0 && day !== 6) workdays++;
-    temp.setDate(temp.getDate() + 1);
-  }
-
-  document.getElementById("workdays").innerText = workdays;
-
-  // Progress bar
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const totalDays = Math.ceil((endOfMonth - startOfMonth) / msPerDay);
-  const progress = ((totalDays - daysLeft) / totalDays) * 100;
-
-  document.getElementById("progressBar").style.width = `${progress}%`;
+  const progressPercent = ((totalDays - daysLeft) / totalDays) * 100;
+  document.getElementById("progressBar").style.width = `${progressPercent}%`;
 }
 
 updateWidget();
-setInterval(updateWidget, 60000);
+setInterval(updateWidget, 60 * 60 * 1000);
 </script>
 
 </body>
