@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Month Countdown Widget</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: transparent;
+    color: #111;
+  }
+
+  .widget {
+    background: #0f172a;
+    color: #e5e7eb;
+    padding: 20px 22px;
+    border-radius: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .date {
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    opacity: 0.8;
+    margin-bottom: 6px;
+  }
+
+  .clock {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+
+  .stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .stat strong {
+    font-weight: 600;
+  }
+
+  .progress {
+    height: 8px;
+    background: #1e293b;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 14px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #22c55e);
+    width: 0%;
+    transition: width 0.5s ease;
+  }
+</style>
+</head>
+<body>
+
+<div class="widget">
+  <div class="date" id="date"></div>
+  <div class="clock" id="clock"></div>
+
+  <div class="stat">
+    <span>Workdays left</span>
+    <strong id="workdays"></strong>
+  </div>
+
+  <div class="stat">
+    <span>Days left this month</span>
+    <strong id="daysLeft"></strong>
+  </div>
+
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+</div>
+
+<script>
+function updateWidget() {
+  const now = new Date();
+
+  // Date display
+  document.getElementById("date").innerText =
+    now.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric"
+    });
+
+  // Clock
+  document.getElementById("clock").innerText =
+    now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  // End of month
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  // Days left
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysLeft = Math.ceil((endOfMonth - now) / msPerDay);
+  document.getElementById("daysLeft").innerText = daysLeft;
+
+  // Workdays left
+  let workdays = 0;
+  const temp = new Date(now);
+
+  while (temp <= endOfMonth) {
+    const day = temp.getDay();
+    if (day !== 0 && day !== 6) workdays++;
+    temp.setDate(temp.getDate() + 1);
+  }
+
+  document.getElementById("workdays").innerText = workdays;
+
+  // Progress bar
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const totalDays = Math.ceil((endOfMonth - startOfMonth) / msPerDay);
+  const progress = ((totalDays - daysLeft) / totalDays) * 100;
+
+  document.getElementById("progressBar").style.width = `${progress}%`;
+}
+
+updateWidget();
+setInterval(updateWidget, 60000);
+</script>
+
+</body>
+</html>
