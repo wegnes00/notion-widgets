@@ -91,8 +91,19 @@
   </div>
 
   <script>
+    // const params = new URLSearchParams(window.location.search);
+
+    // const title = params.get("title") || "My Goal";
+    // const goal = parseInt(params.get("goal")) || 10;
+    // const step = parseInt(params.get("step")) || 1;
+    // const color = params.get("color") || "blue";
+    // const start = parseInt(params.get("start")) || 0;
+    // const min = parseInt(params.get("min")) || 0;
+
+    // const storageKey = "notion-counter-" + title;
     const params = new URLSearchParams(window.location.search);
 
+    const id = params.get("id") || crypto.randomUUID();
     const title = params.get("title") || "My Goal";
     const goal = parseInt(params.get("goal")) || 10;
     const step = parseInt(params.get("step")) || 1;
@@ -100,7 +111,8 @@
     const start = parseInt(params.get("start")) || 0;
     const min = parseInt(params.get("min")) || 0;
 
-    const storageKey = "notion-counter-" + title;
+    const storageKey = `notion-counter-${id}`;
+
 
     let count = parseInt(localStorage.getItem(storageKey));
     if (isNaN(count)) count = start;
