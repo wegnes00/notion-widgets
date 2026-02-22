@@ -5,51 +5,68 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Week Countdown Widget</title>
 <style>
+  :root {
+    --bg: #f8f5f4;
+    --text: #5C4A42;
+    --day: #5C4A42;
+    --radius: 18px;
+    --fontScale: 1;
+  }
+
   body {
-    font-family: sans-serif;
     margin: 0;
-    background: var(--bg, #f8f5f4);
+    padding: 0;
+    font-family: sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: var(--bg);
     height: 100vh;
   }
+
   .week-widget {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: var(--bg, #f8f5f4);
-    border-radius: var(--radius, 18px);
+    background: var(--bg);
+    border-radius: var(--radius);
     padding: 16px;
     min-width: 300px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
+
   .week-days {
     display: flex;
     justify-content: space-between;
     width: 100%;
     margin-top: 12px;
   }
+
   .day {
     flex: 1;
     text-align: center;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 12px 0;
+    border-radius: calc(var(--radius) / 2);
     margin: 0 2px;
     font-weight: bold;
-    background: var(--text, #5C4A42);
+    background: var(--text);
     color: #fff;
     opacity: 0.3;
     transition: opacity 0.3s, background 0.3s;
+    font-size: calc(1rem * var(--fontScale));
   }
+
   .day.today {
     opacity: 1;
-    background: var(--progress, #5C4A42);
+    background: var(--day);
+    color: #fff;
   }
+
   .countdown {
-    margin-top: 12px;
-    font-size: calc(1rem * var(--fontScale, 1));
-    color: var(--text, #5C4A42);
+    margin-bottom: 12px;
+    font-size: calc(1rem * var(--fontScale));
+    color: var(--text);
+    text-align: center;
   }
 </style>
 </head>
@@ -60,11 +77,10 @@
 </div>
 
 <script>
-  // Parse URL parameters
+  // Apply URL parameters
   const params = new URLSearchParams(window.location.search);
-  const root = document.documentElement;
-  ['bg','text','progress','radius','fontScale'].forEach(p => {
-    if(params.get(p)) root.style.setProperty(`--${p}`, params.get(p));
+  ['bg','text','day','radius','fontScale'].forEach(p=>{
+    if(params.get(p)) document.documentElement.style.setProperty(`--${p}`, params.get(p));
   });
 
   const daysOfWeek = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -74,101 +90,11 @@
     const dayIndex = today.getDay(); // 0=Sunday, 6=Saturday
     const daysLeft = 6 - dayIndex;
 
+    // Countdown text
     document.getElementById("countdown-text").textContent =
       `Today is ${daysOfWeek[dayIndex]}. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left in the week.`;
 
-    const container = document.getElementById("week-days-container");
-    container.innerHTML = "";
-    daysOfWeek.forEach((day,i)=>{
-      const el = document.createElement("div");
-      el.className = "day" + (i===dayIndex ? " today" : "");
-      el.textContent = day;
-      container.appendChild(el);
-    });
-  }
-
-  renderWeekCountdown();
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Week Countdown Widget</title>
-<style>
-  body {
-    font-family: sans-serif;
-    margin: 0;
-    background: var(--bg, #f8f5f4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  .week-widget {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: var(--bg, #f8f5f4);
-    border-radius: var(--radius, 18px);
-    padding: 16px;
-    min-width: 300px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  .week-days {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 12px;
-  }
-  .day {
-    flex: 1;
-    text-align: center;
-    padding: 8px;
-    border-radius: 8px;
-    margin: 0 2px;
-    font-weight: bold;
-    background: var(--text, #5C4A42);
-    color: #fff;
-    opacity: 0.3;
-    transition: opacity 0.3s, background 0.3s;
-  }
-  .day.today {
-    opacity: 1;
-    background: var(--progress, #5C4A42);
-  }
-  .countdown {
-    margin-top: 12px;
-    font-size: calc(1rem * var(--fontScale, 1));
-    color: var(--text, #5C4A42);
-  }
-</style>
-</head>
-<body>
-<div class="week-widget">
-  <div class="countdown" id="countdown-text"></div>
-  <div class="week-days" id="week-days-container"></div>
-</div>
-
-<script>
-  // Parse URL parameters
-  const params = new URLSearchParams(window.location.search);
-  const root = document.documentElement;
-  ['bg','text','progress','radius','fontScale'].forEach(p => {
-    if(params.get(p)) root.style.setProperty(`--${p}`, params.get(p));
-  });
-
-  const daysOfWeek = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-
-  function renderWeekCountdown() {
-    const today = new Date();
-    const dayIndex = today.getDay(); // 0=Sunday, 6=Saturday
-    const daysLeft = 6 - dayIndex;
-
-    document.getElementById("countdown-text").textContent =
-      `Today is ${daysOfWeek[dayIndex]}. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left in the week.`;
-
+    // Render week days
     const container = document.getElementById("week-days-container");
     container.innerHTML = "";
     daysOfWeek.forEach((day,i)=>{
