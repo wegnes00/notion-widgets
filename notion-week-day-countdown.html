@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week Countdown Widget</title>
+<style>
+  body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    background: #fefefe;
+  }
+  .week-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff8e1; /* same color style as your existing widget */
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    min-width: 300px;
+  }
+  .week-days {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 12px;
+  }
+  .day {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 0 2px;
+    font-weight: bold;
+    background: #ffecb3; /* neutral highlight */
+  }
+  .day.today {
+    background: #ffb300; /* highlight current day */
+    color: #fff;
+  }
+  .countdown {
+    margin-top: 12px;
+    font-size: 1.2rem;
+  }
+</style>
+</head>
+<body>
+<div class="week-widget">
+  <div class="countdown" id="countdown-text"></div>
+  <div class="week-days" id="week-days-container"></div>
+</div>
+
+<script>
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  function renderWeekCountdown() {
+    const today = new Date();
+    const dayIndex = today.getDay(); // 0=Sunday, 6=Saturday
+    const daysLeft = 6 - dayIndex; // days left in week
+
+    // Render countdown text
+    const countdownText = `Today is ${daysOfWeek[dayIndex]}. ${daysLeft} day${daysLeft !== 1 ? 's' : ''} left in the week.`;
+    document.getElementById("countdown-text").textContent = countdownText;
+
+    // Render days of the week
+    const container = document.getElementById("week-days-container");
+    container.innerHTML = "";
+    daysOfWeek.forEach((day, index) => {
+      const dayEl = document.createElement("div");
+      dayEl.className = "day" + (index === dayIndex ? " today" : "");
+      dayEl.textContent = day;
+      container.appendChild(dayEl);
+    });
+  }
+
+  renderWeekCountdown();
+</script>
+</body>
+</html>
