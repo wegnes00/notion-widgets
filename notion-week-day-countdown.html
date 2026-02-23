@@ -7,6 +7,7 @@
 <style>
   :root {
     --bg: #f8f5f4;
+    --sbg: #fbf8f7;
     --text: #5C4A42;
     --day: #5C4A42;
     --radius: 18px;
@@ -20,33 +21,56 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    /* align-items: center; */
     background: var(--bg);
-    height: 100vh;
+    /* height: 100vh; */
+    flex-direction: column;
+    border-radius: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    align-items: center;
   }
 
   .week-widget {
     display: flex;
     background: var(--bg);
-    border-radius: var(--radius);
+    /* border-radius: var(--radius); */
     padding: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); */
     gap: 16px;
-    min-width: 400px;
+    /* min-width: 400px;*/
   }
 
   .date-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: #fff;
+    background: var(--sbg);
     padding: 16px;
     border-radius: var(--radius);
     min-width: 120px;
+    justify-content: center;
   }
 
-  .month { font-size: calc(0.8rem * var(--fontScale)); color: var(--text); margin-bottom: 4px; }
-  .day-number { font-size: calc(2rem * var(--fontScale)); font-weight: bold; color: var(--text); }
-  .weekday { font-size: calc(1rem * var(--fontScale)); color: var(--text); margin-top: 4px; }
+  .month {
+    font-size: calc(0.8rem * var(--fontScale));
+    color: var(--text);
+    /* margin-bottom: 4px; */
+    /* font-size: 16px; */
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .day-number { font-size: calc(6rem * var(--fontScale)); font-weight: bold; color: var(--text); }
+  .weekday {
+    font-size: calc(0.8rem * var(--fontScale));
+    color: var(--text);
+    /* margin-top: 4px; */
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
 
   .progress-section {
     display: flex;
@@ -54,13 +78,21 @@
     justify-content: center;
     align-items: center;
     min-width: 120px;
-    background: #fff;
+    background: var(--sbg);
     padding: 16px;
     border-radius: var(--radius);
   }
 
-  .days-left { font-size: calc(1.5rem * var(--fontScale)); font-weight: bold; color: var(--text); }
-  .days-text { font-size: calc(0.8rem * var(--fontScale)); color: var(--text); }
+  .days-left { font-size: calc(5rem * var(--fontScale)); font-weight: bold; color: var(--text); }
+  .days-text {
+    font-size: calc(0.8rem * var(--fontScale));
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    text-transform: uppercase;
+    text-align: center;
+   }
 
   .progress-bar {
     width: 100%;
@@ -81,10 +113,10 @@
 
   .week-days {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column;
     justify-content: space-between;
     background: #fff;
-    border-radius: var(--radius);
+    border-radius: var(--radius);*/
     padding: 8px;
     gap: 4px;
     min-width: 60px;
@@ -94,12 +126,17 @@
     text-align: center;
     padding: 8px;
     font-weight: bold;
-    font-size: calc(0.9rem * var(--fontScale));
+    font-size: calc(0.8rem * var(--fontScale));
     border-radius: 8px;
     background: var(--text);
     color: #fff;
     opacity: 0.3;
-    transition: opacity 0.3s, background 0.3s;
+    /* transition: opacity 0.3s, background 0.3s; */
+    /* font-size: 16px; */
+    /* font-weight: 700; */
+    letter-spacing: 0.1em;
+    /* color: var(--text); */
+    text-transform: uppercase;
   }
 
   .week-day.today {
@@ -109,30 +146,28 @@
 </style>
 </head>
 <body>
-<div class="week-widget">
-  <div class="date-section">
-    <div class="month" id="month"></div>
-    <div class="day-number" id="day-number"></div>
-    <div class="weekday" id="weekday"></div>
-  </div>
-
-  <div class="progress-section">
-    <div class="days-left" id="days-left-number"></div>
-    <div class="days-text">days left<br>in the week</div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill"></div>
+    <div class="week-widget">
+        <div class="date-section">
+            <div class="month" id="month"></div>
+            <div class="day-number" id="day-number"></div>
+            <div class="weekday" id="weekday"></div>
+        </div>
+        <div class="progress-section">
+            <div class="days-left" id="days-left-number"></div>
+            <div class="days-text">days left<br>in the week</div>
+            <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
     </div>
-  </div>
-
-  <div class="week-days" id="week-days-container">
+    <div class="week-days" id="week-days-container">
     <!-- Days of week populated by JS -->
-  </div>
-</div>
+    </div>
 
 <script>
   // Apply URL parameters
   const params = new URLSearchParams(window.location.search);
-  ['bg','text','day','radius','fontScale'].forEach(p=>{
+  ['bg','sbg','text','day','radius','fontScale'].forEach(p=>{
     if(params.get(p)) document.documentElement.style.setProperty(`--${p}`, params.get(p));
   });
 
